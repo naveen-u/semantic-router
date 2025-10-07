@@ -39,7 +39,7 @@ type RouterConfig struct {
 	Categories []Category `yaml:"categories"`
 
 	// Rag Configurations for knowledge bases
-	Rag RagConfig `yaml:"rag"`
+	Rag RagConfig `yaml:"rag,omitempty"`
 
 	// Default LLM model to use if no match is found
 	DefaultModel string `yaml:"default_model"`
@@ -291,18 +291,18 @@ type Category struct {
 }
 
 type RagConfig struct {
-	Enabled bool `yaml:"enabled,omitempty"`
+	Enabled bool `yaml:"enabled"`
 	DefaultStrategy string `yaml:"rag_strategy,omitempty"` // Configurable rag strategy for a category (never, adaptive, always)
 	KnowledgeBases []KnowledgeBase `yaml:"knowledge_bases,omitempty"`
 	RetrievalParams RetrievalParams `yaml:"retrieval_params,omitempty"` // Should this be per knowledge base? (i.e in some cases we want to retrieve more chunks that others)
 }
 
 type KnowledgeBase struct {
-	Name string `yaml:"name,omitempty"`
-	Type string `yaml:"type,omitempty"` // VectorDB provider
-	Endpoint string `yaml:"endpoint,omitempty"`
-	Collection string `yaml:"collection,omitempty"`
-	EmbeddingModel string `yaml:"embedding_model,omitempty"`
+	Name string `yaml:"name"`
+	Type string `yaml:"type"` // VectorDB provider
+	Endpoint string `yaml:"endpoint"`
+	Collection string `yaml:"collection"`
+	EmbeddingModel string `yaml:"embedding_model"`
 	ApiKeyEnv string `yaml:"api_key_env,omitempty"`
 	Index string `yaml:"index,omitempty"`
 }
