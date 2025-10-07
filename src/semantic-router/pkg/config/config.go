@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"slices"
 	"sync"
-
-	"github.com/x448/float16"
 	"gopkg.in/yaml.v3"
 )
 
