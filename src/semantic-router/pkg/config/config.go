@@ -7,6 +7,7 @@ import (
 	"slices"
 	"sync"
 
+	"github.com/x448/float16"
 	"gopkg.in/yaml.v3"
 )
 
@@ -39,13 +40,14 @@ type RouterConfig struct {
 	// Categories for routing queries
 	Categories []Category `yaml:"categories"`
 
+	// Rag Configurations for knowledge bases
+	Rag RagConfig `yaml:"rag"`
+
 	// Default LLM model to use if no match is found
 	DefaultModel string `yaml:"default_model"`
 
 	// Default reasoning effort level (low, medium, high) when not specified per category
 	DefaultReasoningEffort string `yaml:"default_reasoning_effort,omitempty"`
-
-	// TODO: Default use of RAG?
 
 	// Reasoning family configurations to define how different model families handle reasoning syntax
 	ReasoningFamilies map[string]ReasoningFamilyConfig `yaml:"reasoning_families,omitempty"`
@@ -265,7 +267,7 @@ type ModelScore struct {
 	UseReasoning *bool   `yaml:"use_reasoning"` // Pointer to detect missing field
 }
 
-// Category represents a category for routing queries, TODO: Update for RAG
+// Category represents a category for routing queries
 type Category struct {
 	Name                 string       `yaml:"name"`
 	Description          string       `yaml:"description,omitempty"`
@@ -289,6 +291,32 @@ type Category struct {
 	// "insert": Prepend the category-specific prompt to the existing system message content
 	SystemPromptMode string `yaml:"system_prompt_mode,omitempty"`
 }
+
+type RagConfig struct {
+	Enabled bool `yaml:"enabled,omitempty"`
+	DefaultStrategy string `yaml:"rag_strategy,omitempty"` // Configurable rag strategy for a category (never, adaptive, always)
+	KnowledgeBases []KnowledgeBase `yaml:"knowledge_bases,omitempty"`
+	RetrievalParams RetrievalParams `yaml:"retrieval_params,omitempty"` // Should this be per knowledge base? (i.e in some cases we want to retrieve more chunks that others)
+}
+
+type KnowledgeBase struct {
+	Name string `yaml:"name,omitempty"`
+	Type string `yaml:"type,omitempty"` // VectorDB provider
+	Endpoint string `yaml:"endpoint,omitempty"`
+	Collection string `yaml:"collection,omitempty"`
+	EmbeddingModel string `yaml:"embedding_model,omitempty"`
+	ApiKeyEnv string `yaml:"api_key_env,omitempty"`
+	Index string `yaml:"index,omitempty"`
+}
+
+type RetrievalParams struct {
+	TopK int `yaml:"top_k,omitempty"`
+	SimilarityThreshold float32 `yaml:"similarity_threshold,omitempty"`
+	MaxContextLength int `yaml:"max_context_length,omitempty"`
+	RerankEnabled bool `yaml:"rerank_enabled,omitempty"`
+}
+
+// TODO: Reranking config?
 
 // Legacy types - can be removed once migration is complete
 
